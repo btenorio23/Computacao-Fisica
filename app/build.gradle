@@ -29,4 +29,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile files('libs/GraphView-4.2.1.jar')
     compile files('libs/volley.jar')
+    compile files('C:/Users/Marcos/git/Computacao-Fisica/libs/GraphView-4.2.1.jar')
 }
