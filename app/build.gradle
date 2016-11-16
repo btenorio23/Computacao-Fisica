@@ -30,4 +30,5 @@ dependencies {
     compile files('libs/GraphView-4.2.1.jar')
     compile files('libs/volley.jar')
     compile files('C:/Users/Marcos/git/Computacao-Fisica/libs/GraphView-4.2.1.jar')
+    compile 'com.google.android.gms:play-services-appindexing:8.4.0'
 }

@@ -14,9 +14,45 @@
     tools:showIn="@layout/app_bar_main"
     android:orientation="vertical">
 
-    <TextView
-        android:text="Leituras"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_leituras"/>
+        android:layout_height="match_parent"
+        android:id="@+id/tb_leituras">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+            <TextView
+                android:text="Horario/Data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/col_data"
+                android:layout_marginRight="@dimen/tb_cells_margin_right"
+                android:layout_marginBottom="@dimen/tb_cells_margin_bottom"
+                android:padding="@dimen/tb_leituras_padding"
+                android:background="@drawable/cell_header_shape"
+                android:width="@dimen/tb_header_horario_width"/>
+            <TextView
+                android:text="Medição"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/col_medicao"
+                android:layout_marginRight="@dimen/tb_cells_margin_right"
+                android:layout_marginBottom="@dimen/tb_cells_margin_bottom"
+                android:padding="@dimen/tb_leituras_padding"
+                android:background="@drawable/cell_header_shape"
+                android:width="@dimen/tb_header_medicao_width"/>
+            <TextView
+                android:text="Nível de Alerta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/col_nv_alerta"
+                android:layout_marginRight="@dimen/tb_cells_margin_right"
+                android:layout_marginBottom="@dimen/tb_cells_margin_bottom"
+                android:padding="@dimen/tb_leituras_padding"
+                android:background="@drawable/cell_header_shape"
+                android:width="@dimen/tb_header_alerta_width"/>
+        </TableRow>
+    </TableLayout>
 </LinearLayout>
