@@ -1,14 +1,13 @@
 package safetyfloat.sf_safetyfloat;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
@@ -30,9 +28,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -55,15 +51,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -76,9 +63,9 @@ public class MainActivity extends AppCompatActivity
         //Adiciona novo Layout no main_content
         mainContentLayout = (RelativeLayout) findViewById(R.id.content_main);
         loadMonitores();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        Intent i = new Intent(MainActivity.this, AlertService.class);
+        i.putExtra("name", "SurvivingwithAndroid");
+        MainActivity.this.startService(i);
     }
 
     @Override
@@ -160,8 +147,13 @@ public class MainActivity extends AppCompatActivity
     public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
         String boiaSelecionada = (String) parent.getItemAtPosition(pos);
         Context context = getApplicationContext();
-        Toast toast = Toast.makeText(context, boiaSelecionada, Toast.LENGTH_SHORT);
-        toast.show();
+        if(parent.getId() == R.id.spinner) {
+            Toast toast = Toast.makeText(context, boiaSelecionada, Toast.LENGTH_SHORT);
+            toast.show();
+        }else if(parent.getId() == R.id.spinner_leituras){
+            Toast toast = Toast.makeText(context, boiaSelecionada + " leitura", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 
     @Override
@@ -189,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         testes[1] = new String[]{"4", "5", "6"};
         testes[2] = new String[]{"7", "8", "9"};
         loadLeiturasTable(testes);
-        //loadTable();
+        loadSpinnerLeitura(null);
     }
 
     public void loadAlertas() {
@@ -200,45 +192,14 @@ public class MainActivity extends AppCompatActivity
         loadContentLayout(R.layout.configuracoes, R.id.configuracoes);
     }
 
-    public void loadTable(){
-        TableLayout t1;
-
-        TableLayout tl = (TableLayout) findViewById(R.id.tb_leituras);
-        TableRow tr_head = new TableRow(this);
-        tr_head.setBackgroundColor(Color.GRAY);
-        tr_head.setLayoutParams(new TableRow.LayoutParams(
-                TableRow.LayoutParams.FILL_PARENT,
-                TableRow.LayoutParams.WRAP_CONTENT));
-        Integer count=0;
-            String date = "data";
-            Double weight_kg = 20.0;
-// Create the table row
-            TableRow tr = new TableRow(this);
-            if(count%2!=0) tr.setBackgroundColor(Color.GRAY);
-            tr.setId(100+count);
-            tr.setLayoutParams(new TableRow.LayoutParams(
-                    TableRow.LayoutParams.FILL_PARENT,
-                    TableRow.LayoutParams.WRAP_CONTENT));
-
-//Create two columns to add as table data
-            // Create a TextView to add date
-            TextView labelDATE = new TextView(this);
-            labelDATE.setId(200+count);
-            labelDATE.setText(date);
-            labelDATE.setPadding(2, 0, 5, 0);
-            labelDATE.setTextColor(Color.WHITE);
-            tr.addView(labelDATE);
-            TextView labelWEIGHT = new TextView(this);
-            labelWEIGHT.setId(200+count);
-            labelWEIGHT.setText(weight_kg.toString());
-            labelWEIGHT.setTextColor(Color.WHITE);
-            tr.addView(labelWEIGHT);
-
-// finally add this to the table row
-            tl.addView(tr, new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.FILL_PARENT,
-                    TableLayout.LayoutParams.WRAP_CONTENT));
-            count++;
+    public void loadSpinnerLeitura(String[] floats){
+        floats = new String[]{"boia1", "boia2", "boia3"};
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_leituras);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, floats);
+        // Apply the adapter to the spinner
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
     }
 
     public void loadLeiturasTable(String[][] content) {
@@ -252,19 +213,17 @@ public class MainActivity extends AppCompatActivity
         int marginBottom = (int) getResources().getDimension(R.dimen.tb_cells_margin_bottom);
         Drawable backgroudShape = getResources().getDrawable(R.drawable.cell_shape);
         //Cria layout a ser utilizado pelas celulas da tabela
-        ViewGroup.MarginLayoutParams layout = new ViewGroup.MarginLayoutParams(horarioWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layout.setMargins(0, 0, marginRight, marginBottom);
 
         for (int i = 0; i < content.length; i++) {
             TableRow tr = new TableRow(getApplicationContext());
             tr.setLayoutParams(new TableRow.LayoutParams(
                     TableRow.LayoutParams.FILL_PARENT,
                     TableRow.LayoutParams.WRAP_CONTENT));
+
             //Cria tres colunas (horario, medicao e alerta) e envia para a linha da tabela
             //Cria coluna horario
             TextView horario = new TextView(this);
-            horario.setLayoutParams(layout);
-            horario.setText("10");
+            horario.setText(content[i][0]);
             horario.setTextColor(Color.BLACK);
             horario.setPadding(padding, padding, padding, padding);
             horario.setBackground(backgroudShape);
@@ -272,9 +231,7 @@ public class MainActivity extends AppCompatActivity
 
             //Cria coluna horario
             TextView medicao = new TextView(this);
-            medicao.setLayoutParams(layout);
-            medicao.setWidth(medicaoWidth);
-            medicao.setText("20");
+            medicao.setText(content[i][1]);
             medicao.setTextColor(Color.BLACK);
             medicao.setPadding(padding, padding, padding, padding);
             medicao.setBackground(backgroudShape);
@@ -282,13 +239,12 @@ public class MainActivity extends AppCompatActivity
 
             //Cria coluna horario
             TextView alerta = new TextView(this);
-            alerta.setLayoutParams(layout);
-            alerta.setWidth(alertaWidth);
-            alerta.setText("30");
+            alerta.setText(content[i][2]);
             alerta.setTextColor(Color.BLACK);
             alerta.setPadding(padding, padding, padding, padding);
             alerta.setBackground(backgroudShape);
             tr.addView(alerta);
+
             tl.addView(tr, new TableLayout.LayoutParams(
                     TableLayout.LayoutParams.FILL_PARENT,
                     TableLayout.LayoutParams.WRAP_CONTENT));
@@ -296,39 +252,5 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    public Action getIndexApiAction() {
-        Thing object = new Thing.Builder()
-                .setName("Main Page") // TODO: Define a title for the content shown.
-                // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
-                .build();
-        return new Action.Builder(Action.TYPE_VIEW)
-                .setObject(object)
-                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
-                .build();
-    }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
 }

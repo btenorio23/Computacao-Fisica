@@ -14,10 +14,17 @@
     tools:showIn="@layout/app_bar_main"
     android:orientation="vertical">
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner_leituras"
+        android:layout_alignParentStart="true" />
+
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/tb_leituras">
+        android:id="@+id/tb_leituras"
+        android:layout_marginTop="30dip">
 
         <TableRow
             android:layout_width="match_parent"
@@ -28,7 +35,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/col_data"
-                android:layout_marginRight="@dimen/tb_cells_margin_right"
                 android:layout_marginBottom="@dimen/tb_cells_margin_bottom"
                 android:padding="@dimen/tb_leituras_padding"
                 android:background="@drawable/cell_header_shape"
@@ -38,7 +44,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/col_medicao"
-                android:layout_marginRight="@dimen/tb_cells_margin_right"
                 android:layout_marginBottom="@dimen/tb_cells_margin_bottom"
                 android:padding="@dimen/tb_leituras_padding"
                 android:background="@drawable/cell_header_shape"
@@ -48,7 +53,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/col_nv_alerta"
-                android:layout_marginRight="@dimen/tb_cells_margin_right"
                 android:layout_marginBottom="@dimen/tb_cells_margin_bottom"
                 android:padding="@dimen/tb_leituras_padding"
                 android:background="@drawable/cell_header_shape"
